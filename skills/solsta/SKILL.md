@@ -118,7 +118,7 @@ solsta_cli queue status --stage=dev --out=json,minify
 - `--stage` is required on every command. `--org` is only required for `login`.
 - Help commands exit with code 1 (this is normal, not an error).
 - Names are case-sensitive throughout the CLI.
-- The CLI does NOT stream progress during installs/updates — set a generous timeout (600s).
+- The CLI does NOT stream progress during local operations — run them in the background and monitor via the orchestration queue.
 - Repositories can be optional (`RepositoryOptional: true`).
 
 For full CLI command reference, see [cli.md](cli.md).

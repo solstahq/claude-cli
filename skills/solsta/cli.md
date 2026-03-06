@@ -172,6 +172,30 @@ solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path>
 solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
 
+### Monitoring Local Operations
+
+The `install`, `update`, `repair`, and `launch` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:
+
+1. Run the local command in the background
+2. Poll `solsta_cli queue status` to get the `progress` percentage and `status` field
+3. A helper script is available at `scripts/queue-progress.sh <stage> [poll_interval]`
+
+The `uninstall` command is local-only and does **not** go through the orchestration queue.
+
+### Install Result Stats
+
+The STOP response from `local install`/`update` includes deployment stats:
+
+| Field | Description |
+|---|---|
+| `remoteReadBytes` | Bytes downloaded from remote storage |
+| `localReadBytes` | Bytes read from local disk (existing data) |
+| `localWriteBytes` | Bytes written to local disk |
+| `remoteWriteBytes` | Bytes uploaded (tracking metadata) |
+| `elapsedTime` | Sync duration in seconds |
+| `successful` | Boolean success indicator |
+| `filesErased` | Number of files removed |
+
 ---
 
 ## Install Location Convention
@@ -194,7 +218,7 @@ jq -Rr 'fromjson?'
 
 - Help commands exit with code 1 (normal, not an error).
 - Successful data commands exit with code 0 and include data in the STOP line.
-- The CLI does NOT stream progress during installs/updates — set timeout to 600s for large installs.
+- Local commands (install/update/repair/launch) block until complete — run in background and monitor via queue.
 - Names are case-sensitive throughout the CLI.
 - Timestamps in output are Unix epoch seconds.
 - Repositories can be optional (`RepositoryOptional: true`).
