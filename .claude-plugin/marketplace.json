@@ -1,0 +1,18 @@
+{
+  "name": "solsta-inc",
+  "owner": {
+    "name": "Solsta"
+  },
+  "metadata": {
+    "description": "Claude Code marketplace plugin for the Solsta build distribution platform.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "solsta",
+      "version": "1.0.0",
+      "source": "./",
+      "description": "Skills for working with the Solsta platform CLI and backend APIs"
+    }
+  ]
+}
