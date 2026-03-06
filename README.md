@@ -12,9 +12,9 @@ Claude Code marketplace plugin for the [Solsta](https://www.solsta.io) build dis
 
 | Skill | Description |
 |-------|-------------|
-| **solsta** | Platform overview, concepts, authentication, and skill routing |
-| **solsta-cli** | Solsta CLI — products, environments, local installations, orchestration, and more |
-| **solsta-api** | Solsta REST APIs — releases, repositories, update paths, teams, users, publishing, and more |
+| **solsta** | Solsta platform — CLI commands, REST API, products, environments, local installations, orchestration, releases, repositories, publishing, and more |
+
+The skill includes supporting reference files for [CLI commands](skills/solsta/cli.md) and [REST API endpoints](skills/solsta/api.md) that load on demand.
 
 ## Requirements
 

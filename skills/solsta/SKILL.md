@@ -1,6 +1,6 @@
 ---
 name: solsta
-description: "Solsta platform overview and skill routing. Use when the user mentions Solsta, build distribution, game deployment, or any Solsta-related task to determine which skill to use. Keywords: solsta, deploy, build, distribution, game, studio, platform."
+description: "Solsta build distribution platform. Use for any Solsta-related task: CLI commands, API calls, authentication, products, environments, repositories, releases, installs, promotions, orchestration, or platform concepts. Keywords: solsta, deploy, build distribution, game studio, environment, product, repository, release, promote, snapshot, install, update, launch, delta, CI/CD, orchestration, sync, api, swagger, rest, manifest."
 ---
 
 # Solsta
@@ -11,7 +11,7 @@ Solsta is a fast, secure build distribution platform for game studios.
 
 ## Authentication
 
-All Solsta access (CLI and API) requires a Bearer token. The only way to obtain a token is through `solsta_cli`:
+All Solsta access requires authentication via `solsta_cli`:
 
 ```bash
 # Interactive login (user must open the OAuth URL in their browser)
@@ -21,7 +21,9 @@ solsta_cli login prompt --org=snxd --stage=dev --out=json,minify --display_token
 solsta_cli login client_credentials --client_id=<id> --client_secret=<secret> --org=snxd --stage=dev --out=json,minify --display_token=true
 ```
 
-Extract the token from the STOP response with `--display_token=true`. Tokens are valid for ~12 hours. See the `solsta-cli` skill for full auth details.
+- `login` requires both `--org` and `--stage`. All other commands require only `--stage`.
+- Tokens are valid for ~12 hours.
+- `solsta_cli login prompt` requires interactive terminal input — the user must log in before the AI can use other commands.
 
 ## Stages
 
@@ -30,11 +32,6 @@ Extract the token from the STOP response with `--display_token=true`. Tokens are
 | `dev` | axis-dev.snxd.com |
 | `qa` | axis-qa.snxd.com |
 | `prod` | axis.snxd.com |
-
-## Known Env
-
-- **Org:** `snxd` — org ID `org_4c0e2cbc973c4ed8b6fcb7b95bca9833`
-- **Default stage:** `dev`
 
 ## Object Hierarchy
 
@@ -61,12 +58,9 @@ Organization
 - **Promoted Release** — The active release of a repository in an environment. This is what users sync to their machines.
 - **Snapshot** — A complete, tested state of an environment: all repository releases + launch buttons. Used for atomic promotion across environments.
 - **Metafile** — JSON file containing release details (file names, sizes, timestamps). Generated during deployment; used by the Solsta client for sync.
-- **Sync** — Aligning a user's local repository with the promoted release, including download and file operations.
 - **Delta Update Paths** — Byte-level differences between two releases that minimize download size. Generated automatically during deploy/promote if the environment's Update Path Count > 0.
-- **Block-Level Differencing** — Monitors only modified data blocks rather than complete files. Works independently of delta settings and is always active.
 - **Update Path Count** — Environment setting controlling how many prior releases get delta comparisons (0 = no deltas, 2 = two delta paths e.g. 1.0→3.0 and 2.0→3.0).
 - **Storage Types** — `pieceshared` (default, shared piece storage), `piece` (dedicated piece storage), `file` (file-based storage).
-- **Location** — The source storage location (bucket or CDN origin) associated with an environment.
 - **Launch Buttons** — Configured executable entry points with arguments. Support `{installDirectory}` macro for subdirectory paths relative to install root.
 
 ### Promotion Flow
@@ -81,9 +75,9 @@ Staging Environment
 Production Environment → Users sync via Solsta Desktop/CLI
 ```
 
-- **Single Release Promotion** — Moves one repository release to a target environment. Best for independent component updates.
-- **Snapshot Promotion** — Moves ALL repository releases + launch buttons atomically. Best when client + server were tested together.
-- **Cross-location promotion** automatically copies files from source bucket to target bucket and creates delta update paths if target has update_path_count > 0.
+- **Single Release Promotion** — Moves one repository release to a target environment.
+- **Snapshot Promotion** — Moves ALL repository releases + launch buttons atomically.
+- **Cross-location promotion** automatically copies files between buckets and creates delta update paths if target has update_path_count > 0.
 
 ### Orchestration Service
 
@@ -91,81 +85,77 @@ Manages concurrent installs/updates across shared networks to prevent bandwidth 
 - Network thresholds use CIDR notation (e.g. 192.168.8.0/24)
 - Device thresholds limit concurrent downloads per machine (recommended 2-4)
 - Clients check in every 15 seconds; downloads auto-start when slots open
-- Queue items: paused downloads exit queue; crashes clear active in 10min, pending in 24hr
-
-### Local Caching
-
-Studio-hosted cache server that serves content at LAN speed:
-- First download populates cache; subsequent downloads served locally
-- Caching starts immediately (User 1 doesn't need to finish first)
-- Configured via Organization → Cache Redirects with CIDR-based IP routing
-- Requires Docker, internal DNS subdomain, HTTPS certs
 
 ### Roles & Permissions
 
 - **Organization Admin** — Creates teams, manages M2M credentials, full access
 - **Team Admin** — Manages team membership, add/remove members
 - **Team Member** — Access to objects their team has roles for
-- Admin permissions always override Viewer permissions
-- **M2M Credentials (Machines)** — Client ID + Client Secret for CI/CD automation. Machines must be assigned Viewer (install/update) or Admin (deploy) roles at Product or Environment level.
+- **M2M Credentials (Machines)** — Client ID + Client Secret for CI/CD automation
 
 ---
 
-## Available Skills
+## CLI (`solsta_cli`)
 
-### solsta-cli
+The CLI (v7.2.191) handles day-to-day operations: authentication, products, environments, local installations, invitations, orchestration queues, and locations.
 
-The CLI (`solsta_cli`) is best for day-to-day operations:
+### Output Format
 
-- **Authentication** — login/logout
-- **Products** — create, edit, delete, list
-- **Environments** — create, edit, delete, list
-- **Local installations** — install, update, launch, repair, uninstall
-- **Invitations** — send, revoke, list
-- **Orchestration queue** — status, run
-- **Locations** — list valid storage locations
-- **Components** — download/update CLI
+All commands emit JSON lines with `type`: `START`, `INFO`, `STOP`. Always add `--out=json,minify` for machine-readable output.
+
+### Common Commands
+
+```bash
+solsta_cli org read --stage=dev --out=json,minify
+solsta_cli product read --stage=dev --out=json,minify
+solsta_cli env read --product_name=<name> --stage=dev --out=json,minify
+solsta_cli invite read --stage=dev --out=json,minify
+solsta_cli queue status --stage=dev --out=json,minify
+```
+
+### CLI Notes
+
+- `--stage` is required on every command. `--org` is only required for `login`.
+- Help commands exit with code 1 (this is normal, not an error).
+- Names are case-sensitive throughout the CLI.
+- The CLI does NOT stream progress during installs/updates — set a generous timeout (600s).
+- Repositories can be optional (`RepositoryOptional: true`).
+
+For full CLI command reference, see [cli.md](cli.md).
 
 ### CLI Limitations
 
-The CLI does **not** expose operations for:
+The CLI does **not** expose operations for: releases, repositories, update paths, publishing/promotion, history/snapshots, teams, users, machines, or member roles. For these, use the API.
 
-- Releases (create, list, search)
-- Repositories (create, list, search)
-- Update paths / delta management
-- Publishing / promotion
-- History and snapshots
-- Teams and team membership
-- Users and user membership
-- Machine / M2M credential management
-- Environment or product member roles
+---
 
-For these, use the API directly.
+## REST API
 
-### solsta-api
+The Solsta backend exposes REST APIs via gateway services. Use these when the CLI doesn't support the operation you need.
 
-The REST API provides full access to all backend gateway services. Use it when:
+Always use CloudFront hosts (e.g. `https://axis-dev.snxd.com/`) — direct API Gateway hostnames return `401`.
 
-- The CLI doesn't support the operation (see limitations above)
-- You need fine-grained control over releases, repositories, or update paths
-- You're working with teams, users, or membership management
-- You need to publish or promote releases programmatically
-- You want to inspect history or snapshots
-- You need access to other gateway services (config, entitlement, track, toolbox, orglookup, audit)
+```bash
+curl -H "Authorization: Bearer $TOKEN" https://axis-dev.snxd.com/manifest/product
+```
 
-The Manifest API Swagger spec is available in `solsta-api/references/manifest.swagger.yaml`.
+For full API details and endpoints, see [api.md](api.md).
+
+For the complete OpenAPI spec, see [references/manifest.swagger.yaml](references/manifest.swagger.yaml).
+
+---
 
 ## When to Use Which
 
 | Task | Use |
 |------|-----|
-| Login, list products/envs | **solsta-cli** |
-| Install, update, launch locally | **solsta-cli** |
-| Manage invitations | **solsta-cli** |
-| Orchestration queue | **solsta-cli** |
-| Create/manage releases | **solsta-api** |
-| Create/manage repositories | **solsta-api** |
-| Publish/promote releases | **solsta-api** |
-| Manage teams and users | **solsta-api** |
-| View history/snapshots | **solsta-api** |
-| Delta update path management | **solsta-api** |
+| Login, list products/envs | CLI |
+| Install, update, launch locally | CLI |
+| Manage invitations | CLI |
+| Orchestration queue | CLI |
+| Create/manage releases | API |
+| Create/manage repositories | API |
+| Publish/promote releases | API |
+| Manage teams and users | API |
+| View history/snapshots | API |
+| Delta update path management | API |

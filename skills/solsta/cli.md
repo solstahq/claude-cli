@@ -1,4 +1,4 @@
-# Solsta CLI Command Reference
+# Solsta CLI Reference
 
 Binary: `solsta_cli` (v7.2.191)
 
@@ -171,3 +171,31 @@ solsta_cli local update --all --location=<path> --stage=dev --out=json,minify
 solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
+
+---
+
+## Install Location Convention
+
+When installing locally, use a clear path structure: `~/Downloads/<ProductName>/<EnvName>` or `~/Games/<ProductName>`. The `--location` parameter is required and must be an absolute path.
+
+## Output Parsing
+
+All commands emit JSON lines with `type`: `START`, `INFO`, `STOP`.
+
+```bash
+# Extract STOP response
+grep '^{' | jq -r 'select(.type == "STOP")'
+
+# Stream-parse mixed output
+jq -Rr 'fromjson?'
+```
+
+## Agent Notes
+
+- Help commands exit with code 1 (normal, not an error).
+- Successful data commands exit with code 0 and include data in the STOP line.
+- The CLI does NOT stream progress during installs/updates — set timeout to 600s for large installs.
+- Names are case-sensitive throughout the CLI.
+- Timestamps in output are Unix epoch seconds.
+- Repositories can be optional (`RepositoryOptional: true`).
+- `NotesLocation` on releases may contain a URL (e.g. GitHub release notes) — surface this to the user.
