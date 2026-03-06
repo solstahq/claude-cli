@@ -5,7 +5,7 @@ description: Work with the Solsta platform CLI (solsta_cli). Use when authentica
 
 # Solsta CLI
 
-The CLI (`solsta_cli`) manages products, environments, local installations, and orchestration queues. See the `solsta` skill for platform concepts, object hierarchy, and stage/host details.
+The CLI (`solsta_cli` v7.2.191) manages products, environments, local installations, and orchestration queues. See the `solsta` skill for platform concepts, object hierarchy, and stage/host details.
 
 ## Installation
 
@@ -18,7 +18,7 @@ solsta_cli component get --name=solsta_cli --target=/usr/local/bin/
 
 ## Authentication
 
-Check if the user is already logged in by running any read command (e.g. `solsta_cli org read`). If it fails, do interactive login:
+Check if the user is already logged in by running any read command (e.g. `solsta_cli org read --stage=dev`). If it fails, do interactive login:
 
 ```bash
 solsta_cli login prompt \
@@ -37,6 +37,8 @@ solsta_cli login client_credentials \
   --client_id=<id> --client_secret=<secret> \
   --org=snxd --stage=dev --out=json,minify --display_token=true
 ```
+
+**Important:** `login` requires both `--org` and `--stage`. All other commands require only `--stage` (the CLI infers the org from the stored session).
 
 **Important:** `solsta_cli login prompt` requires interactive terminal input — AI agents cannot perform this step. The user must log in before the AI can use other commands.
 
@@ -60,23 +62,25 @@ Always add `--out=json,minify` for machine-readable output.
 
 ```bash
 # Org info
-solsta_cli org read --org=snxd --stage=dev --out=json,minify
+solsta_cli org read --stage=dev --out=json,minify
 
-# List products
-solsta_cli product read --org=snxd --stage=dev --out=json,minify
+# List products (use --search_query to filter)
+solsta_cli product read --stage=dev --out=json,minify
 
 # List envs for a product
-solsta_cli env read --org=snxd --product_name=<name> --stage=dev --out=json,minify
+solsta_cli env read --product_name=<name> --stage=dev --out=json,minify
 
 # Read invites
-solsta_cli invite read --org=snxd --stage=dev --out=json,minify
+solsta_cli invite read --stage=dev --out=json,minify
 
 # Queue status
-solsta_cli queue status --org=snxd --stage=dev --out=json,minify
+solsta_cli queue status --stage=dev --out=json,minify
 ```
 
 ## Common Params
 
+- `--stage` — required on every command to identify the session
+- `--org` — only required for `login`
 - `--limit`, `--search_query` — filter results
 - `--sort_direction` — `forward` / `backward`
 - `--start_key` — pagination cursor from previous STOP response

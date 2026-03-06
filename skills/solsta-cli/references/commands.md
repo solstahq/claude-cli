@@ -1,17 +1,17 @@
 # Solsta CLI Command Reference
 
-Binary: `solsta_cli`
+Binary: `solsta_cli` (v7.2.191)
 
 ## Global Flags
 
 | Flag | Description |
 |---|---|
-| `--org=VALUE` | Org slug (e.g. `snxd`) |
-| `--stage=VALUE` | `dev`, `qa`, or `prod` |
+| `--org=VALUE` | Org slug (e.g. `snxd`). **Required for `login` only.** |
+| `--stage=VALUE` | `dev`, `qa`, or `prod`. **Required on all commands.** |
 | `--out=VALUE` | Output flags: `json`, `minify` (e.g. `--out=json,minify`) |
 | `--display_token=VALUE` | Include access token in response (default: false) |
 
-## Pagination Flags (on read/list commands)
+## Pagination Flags (on read/status commands)
 
 | Flag | Description |
 |---|---|
@@ -46,7 +46,7 @@ solsta_cli logout
 ## org
 
 ```bash
-solsta_cli org read --org=snxd --stage=dev --out=json,minify
+solsta_cli org read --stage=dev --out=json,minify
 ```
 
 ---
@@ -58,13 +58,14 @@ solsta_cli org read --org=snxd --stage=dev --out=json,minify
 | `create` | `--product_id` (required), `--product_name`, `--description` |
 | `delete` | `--product_id` or `--product_name` |
 | `edit` | `--product_id` or `--product_name`, `--description` |
-| `read` | `--product_id` or `--product_name` (omit for all) |
+| `read` | Pagination flags only (returns all products) |
 
 Sort fields: `createdTime`, `modifiedTime`, `name`, `product`
 
 ```bash
-solsta_cli product read --org=snxd --stage=dev --out=json,minify
-solsta_cli product read --org=snxd --product_name=<name> --stage=dev --out=json,minify
+solsta_cli product read --stage=dev --out=json,minify
+solsta_cli product read --search_query=<query> --stage=dev --out=json,minify
+solsta_cli product create --product_id=<id> --product_name=<name> --stage=dev --out=json,minify
 ```
 
 ---
@@ -73,17 +74,18 @@ solsta_cli product read --org=snxd --product_name=<name> --stage=dev --out=json,
 
 | Subcommand | Flags |
 |---|---|
-| `create` | `--env_id` (required), `--update_path_count` (required), `--product_id`/`--product_name`, `--env_name`, `--description`, `--location`, `--storage_type` |
+| `create` | `--product_id`/`--product_name`, `--env_id` (required), `--env_name`, `--description`, `--location`, `--storage_type`, `--update_path_count` |
 | `delete` | `--product_id`/`--product_name`, `--env_id`/`--env_name` |
 | `edit` | `--product_id`/`--product_name`, `--env_id`/`--env_name`, `--description`, `--location`, `--storage_type`, `--update_path_count` |
-| `read` | `--product_id`/`--product_name` (omit for all) |
+| `read` | `--product_id`/`--product_name` (optional), pagination flags |
 
 Storage types: `pieceshared` (default), `piece`, `file`
 
 Sort fields: `createdTime`, `modifiedTime`, `name`, `env`
 
 ```bash
-solsta_cli env read --org=snxd --product_name=<name> --stage=dev --out=json,minify
+solsta_cli env read --product_name=<name> --stage=dev --out=json,minify
+solsta_cli env create --product_name=<name> --env_id=<id> --update_path_count=0 --stage=dev --out=json,minify
 ```
 
 ---
@@ -94,12 +96,13 @@ solsta_cli env read --org=snxd --product_name=<name> --stage=dev --out=json,mini
 |---|---|
 | `create` | `--invitee_email`, `--inviter_name` |
 | `delete` | `--invite_id` |
-| `read` | (pagination flags only) |
+| `read` | Pagination flags only |
 
 Sort fields: `invite`, `inviteeEmail`, `inviterName`, `invitationUrl`, `createdTime`, `expireTime`
 
 ```bash
-solsta_cli invite read --org=snxd --stage=dev --out=json,minify
+solsta_cli invite read --stage=dev --out=json,minify
+solsta_cli invite create --invitee_email=<email> --inviter_name=<name> --stage=dev --out=json,minify
 ```
 
 ---
@@ -108,13 +111,14 @@ solsta_cli invite read --org=snxd --stage=dev --out=json,minify
 
 | Subcommand | Flags |
 |---|---|
-| `status` | `--device_id` (optional, defaults to current machine) |
-| `run` | — |
+| `status` | `--device_id` (optional, defaults to current machine), pagination flags |
+| `run` | (none) |
 
 Sort fields: `createdTime`, `device`, `install`, `modifiedTime`, `networkId`, `org.createdTime`
 
 ```bash
-solsta_cli queue status --org=snxd --stage=dev --out=json,minify
+solsta_cli queue status --stage=dev --out=json,minify
+solsta_cli queue run --stage=dev --out=json,minify
 ```
 
 ---
@@ -122,22 +126,19 @@ solsta_cli queue status --org=snxd --stage=dev --out=json,minify
 ## location
 
 ```bash
-solsta_cli location read --out=json,minify
+solsta_cli location read --stage=dev --out=json,minify
 ```
 
 ---
 
 ## component
 
-| Flag | Description |
+| Subcommand | Flags |
 |---|---|
-| `--name=VALUE` | Component name (default: `solsta_cli`) |
-| `--platform=VALUE` | Target platform |
-| `--target=VALUE` | Target file/directory (default: cwd) |
-| `--version=VALUE` | Version to download |
+| `get` | `--name` (default: `solsta_cli`), `--platform`, `--target` (default: cwd), `--version` (default: 7.2.191) |
 
 ```bash
-solsta_cli component get --out=json,minify
+solsta_cli component get --name=solsta_cli --target=/usr/local/bin/ --out=json,minify
 ```
 
 ---
@@ -157,13 +158,16 @@ All subcommands (except `read`) require `--location`. Most accept `--product_id`
 
 `install` additional flags: `--history_id`, `--history_version`, `--repository_id`, `--repository_name`, `--release_id`, `--release_version`
 
-`launch` additional flag: `--launch_name` (required)
+`launch` additional flags: `--launch_name` (required), `--product_id`/`--product_name`, `--env_id`/`--env_name`
 
 `repair`, `uninstall`, `update` additional flag: `--all` (apply to every deployment)
 
 ```bash
 solsta_cli local read --out=json,minify
-solsta_cli local install --product_name=<name> --env_name=<env> --location=<path> --org=snxd --stage=dev --out=json,minify
-solsta_cli local launch --launch_name=<name> --location=<path> --out=json,minify
-solsta_cli local update --product_name=<name> --env_name=<env> --location=<path> --org=snxd --stage=dev --out=json,minify
+solsta_cli local install --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
+solsta_cli local launch --launch_name=<name> --location=<path> --stage=dev --out=json,minify
+solsta_cli local update --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
+solsta_cli local update --all --location=<path> --stage=dev --out=json,minify
+solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
+solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
