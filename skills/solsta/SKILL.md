@@ -75,9 +75,11 @@ Staging Environment
 Production Environment → Users sync via Solsta Desktop/CLI
 ```
 
-- **Single Release Promotion** — Moves one repository release to a target environment.
-- **Snapshot Promotion** — Moves ALL repository releases + launch buttons atomically.
+- **Single Release Promotion** — Copies the target's latest snapshot and updates one repository's release within it.
+- **Snapshot Promotion** — Copies an entire source snapshot (all repos + releases) to the target environment.
 - **Cross-location promotion** automatically copies files between buckets and creates delta update paths if target has update_path_count > 0.
+
+For step-by-step promotion instructions, see [promote.md](promote.md).
 
 ### Orchestration Service
 
