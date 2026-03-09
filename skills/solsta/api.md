@@ -110,8 +110,9 @@ curl -s -H "Authorization: Bearer $TOKEN" "$BASE_URL/product" | jq .
 # Extract specific fields
 curl -s ... | jq '[.items[] | {name: .name, id: .product}]'
 
-# Get current releases for an environment from /history
-curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1" \
+# Get current (latest) releases for an environment from /history
+# Default sort is oldest-first — use sortDirection=backward for newest
+curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1&sortDirection=backward" \
   | jq '[.items[0].snapshot[] | {repo: .repositoryName, version: .version, size: .size}]'
 ```
 
