@@ -141,7 +141,15 @@ curl -H "Authorization: Bearer $TOKEN" https://axis-dev.snxd.com/manifest/produc
 
 For full API details and endpoints, see [api.md](api.md).
 
-For the complete OpenAPI spec, see [references/manifest.swagger.yaml](references/manifest.swagger.yaml).
+**Before making any API call**, use `yq` to look up the endpoint in the OpenAPI spec. Use `jq` to parse API responses.
+```bash
+# Look up endpoint params and schemas
+yq '.paths["/history"].get.parameters' references/manifest.swagger.yaml
+yq '.components.schemas.PublishObject' references/manifest.swagger.yaml
+
+# Parse API responses
+curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
+```
 
 ---
 

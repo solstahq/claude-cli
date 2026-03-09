@@ -19,3 +19,5 @@ The skill includes supporting reference files for [CLI commands](skills/solsta/c
 ## Requirements
 
 - [Solsta CLI](https://www.solsta.io/download) (`solsta_cli`) on your PATH
+- [jq](https://jqlang.github.io/jq/) — for parsing JSON API responses
+- [yq](https://github.com/mikefarah/yq) — for looking up endpoints in the OpenAPI spec

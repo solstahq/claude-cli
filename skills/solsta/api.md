@@ -79,6 +79,42 @@ If `lastEvaluatedKey` is absent, there are no more items. Fewer items than `limi
 - POST to an existing object without an optional property keeps the existing value
 - POST to a non-existing object without an optional property uses the default
 
+## Looking Up Endpoints
+
+Before making any API call, use `yq` to check the OpenAPI spec for parameter names, types, and descriptions:
+
+```bash
+# Get parameters for an endpoint
+yq '.paths["/history"].get.parameters' references/manifest.swagger.yaml
+
+# Get request body schema (for PUT/POST)
+yq '.paths["/publish"].put.requestBody' references/manifest.swagger.yaml
+
+# Look up a schema definition referenced by $ref
+yq '.components.schemas.PublishObject' references/manifest.swagger.yaml
+
+# Get response schema
+yq '.paths["/product"].get.responses["200"].content["application/json"].schema' references/manifest.swagger.yaml
+```
+
+Parameter descriptions indicate the expected value type — e.g. `description: Product id` means pass the object's **ID**, not its display name. This applies to query params and request body fields alike.
+
+## Parsing Responses
+
+Use `jq` to parse API responses:
+
+```bash
+# Pretty print
+curl -s -H "Authorization: Bearer $TOKEN" "$BASE_URL/product" | jq .
+
+# Extract specific fields
+curl -s ... | jq '[.items[] | {name: .name, id: .product}]'
+
+# Get current releases for an environment from /history
+curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1" \
+  | jq '[.items[0].snapshot[] | {repo: .repositoryName, version: .version, size: .size}]'
+```
+
 ## Full Schema
 
 Refer to [references/manifest.swagger.yaml](references/manifest.swagger.yaml) for complete request/response schemas, all query parameters, and detailed field descriptions.
