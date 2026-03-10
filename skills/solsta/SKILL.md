@@ -161,7 +161,7 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 |------|-----|
 | Login, list products/envs | CLI |
 | Install, update, launch locally | CLI |
-| Check for updates | CLI + API ([updates.md](updates.md)) |
+| Check for updates | `scripts/check-for-updates.sh <stage>` |
 | Manage invitations | CLI |
 | Orchestration queue | CLI |
 | Create/manage releases | API |

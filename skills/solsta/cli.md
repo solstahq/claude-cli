@@ -172,10 +172,6 @@ solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path>
 solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
 
-### Checking for Updates
-
-There is no CLI command to check for updates. See [updates.md](updates.md) for the procedure.
-
 ### Monitoring Local Operations
 
 The `install`, `update`, `repair`, and `launch` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:

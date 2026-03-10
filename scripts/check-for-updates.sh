@@ -1,14 +1,16 @@
-# Checking for Updates
+#!/bin/bash
+# Compare local Solsta installs against remote promoted releases
+# Usage: ./check-for-updates.sh <stage>
+#
+# Outputs one line per local install with update status.
 
-Compare local installs (`solsta_cli local read`) against remote promoted releases (`/history` API) to show update availability. Present results as a table with Product, Environment, Local version, Remote version, and Status columns.
-
-```bash
+STAGE="${1:-qa}"
 TOKEN=$(cat /tmp/solsta_token.txt)
-BASE="https://axis-$STAGE.snxd.com/manifest"
+BASE="https://axis-${STAGE}.snxd.com/manifest"
 JQ_REPOS='[.repositories[]? | "\(.repositoryName)=\(.version)"] | join(",")'
 JQ_REMOTE='[.items[0].snapshot[]? | "\(.repositoryName)=\(.version)"] | join(",")'
 
-LOCAL=$(solsta_cli local read --stage=$STAGE --out=json,minify 2>&1 \
+LOCAL=$(solsta_cli local read --stage="$STAGE" --out=json,minify 2>&1 \
   | jq -r 'select(.type == "STOP") | .body.items[]')
 
 echo "$LOCAL" \
@@ -20,4 +22,3 @@ echo "$LOCAL" \
     [ "$LOCAL_REPOS" = "$REMOTE" ] && STATUS="Up to date" || STATUS="Update available"
     echo "$PROD_NAME | $ENV_NAME | Local: $LOCAL_REPOS | Remote: $REMOTE | $STATUS"
   done
-```
