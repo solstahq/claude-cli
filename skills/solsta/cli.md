@@ -172,6 +172,25 @@ solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path>
 solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
 
+### Checking for Updates
+
+There is no CLI command to check for updates. Instead, compare local versions from `local read` against remote promoted versions from the `/history` API:
+
+```bash
+TOKEN=$(cat /tmp/solsta_token.txt)
+LOCAL=$(solsta_cli local read --stage=$STAGE --out=json,minify 2>&1 | jq -r 'select(.type == "STOP") | .body.items[]')
+echo "$LOCAL" | jq -r '[.productName, .product, .envName, .env, ([.repositories[]? | "\(.repositoryName)=\(.version)"] | join(","))] | @tsv' \
+  | sort -u | while IFS=$'\t' read -r PROD_NAME PROD_ID ENV_NAME ENV_ID LOCAL_REPOS; do
+    REMOTE=$(curl -s -H "Authorization: Bearer $TOKEN" \
+      "$BASE/history?product=$PROD_ID&env=$ENV_ID&limit=1&sortDirection=backward" \
+      | jq -r '[.items[0].snapshot[]? | "\(.repositoryName)=\(.version)"] | join(",")')
+    [ "$LOCAL_REPOS" = "$REMOTE" ] && STATUS="Up to date" || STATUS="Update available"
+    echo "$PROD_NAME | $ENV_NAME | Local: $LOCAL_REPOS | Remote: $REMOTE | $STATUS"
+  done
+```
+
+Present results as a table with Product, Environment, Local version, Remote version, and Status columns.
+
 ### Monitoring Local Operations
 
 The `install`, `update`, `repair`, and `launch` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:
