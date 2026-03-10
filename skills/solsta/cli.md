@@ -242,3 +242,4 @@ jq -Rr 'fromjson?'
 - Timestamps in output are Unix epoch seconds.
 - Repositories can be optional (`RepositoryOptional: true`).
 - `NotesLocation` on releases may contain a URL (e.g. GitHub release notes) — surface this to the user.
+- The CLI does not expand environment variables or `~` in paths. Bash expands `$HOME` outside double quotes and inside double quotes, but `~` only expands outside quotes. To avoid issues, always pass fully resolved absolute paths (e.g. `/Users/nathan/Downloads/...`).
