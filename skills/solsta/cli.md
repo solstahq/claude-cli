@@ -145,38 +145,72 @@ solsta_cli component get --name=solsta_cli --target=/usr/local/bin/ --out=json,m
 
 ## local
 
-| Subcommand | Description |
-|---|---|
-| `install` | Install a local environment |
-| `update` | Update a local environment |
-| `launch` | Launch an application |
-| `repair` | Repair a local environment |
-| `uninstall` | Uninstall a local environment |
-| `read` | List local environments |
+All `local` subcommands (except `read`) require `--location` as a fully resolved absolute path. Most accept `--product_id`/`--product_name` and `--env_id`/`--env_name`.
 
-All subcommands (except `read`) require `--location`. Most accept `--product_id`/`--product_name` and `--env_id`/`--env_name`.
+### local read
 
-**Before installing**, always:
-1. Ask the user for an install directory (do not assume a default path).
-2. Run `local read` to check for existing installs of the same product/env. If found, show them to the user and ask if they want to install another copy into a different directory.
-
-`install` additional flags: `--history_id`, `--history_version`, `--repository_id`, `--repository_name`, `--release_id`, `--release_version`
-
-`launch` additional flags: `--launch_name` (required), `--product_id`/`--product_name`, `--env_id`/`--env_name`
-
-`repair`, `uninstall`, `update` additional flag: `--all` (apply to every deployment)
+List all local installations.
 
 ```bash
-solsta_cli local read --out=json,minify
+solsta_cli local read --stage=dev --out=json,minify
+```
+
+### local install
+
+Install an environment locally.
+
+**Before installing**, always:
+1. Ask the user for an install directory. Recommend `~/Games/<ProductName>/<EnvName>` or `~/Downloads/<ProductName>/<EnvName>` as defaults.
+2. Run `local read` to check for existing installs of the same product/env. If found, show them to the user and ask if they want to install another copy into a different directory.
+
+Additional flags: `--history_id`, `--history_version`, `--repository_id`, `--repository_name`, `--release_id`, `--release_version`
+
+```bash
 solsta_cli local install --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
-solsta_cli local launch --launch_name=<name> --location=<path> --stage=dev --out=json,minify
+```
+
+### local update
+
+Update an installed environment to the latest promoted release.
+
+Additional flag: `--all` (update every local deployment)
+
+```bash
 solsta_cli local update --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 solsta_cli local update --all --location=<path> --stage=dev --out=json,minify
+```
+
+### local repair
+
+Verify and repair a local installation.
+
+Additional flag: `--all` (repair every local deployment)
+
+```bash
 solsta_cli local repair --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
+```
+
+### local launch
+
+Launch a configured launch button. The environment must be installed locally first. See [launch.md](launch.md) for managing launch buttons.
+
+Additional flags: `--launch_name` (required), `--product_id`/`--product_name`, `--env_id`/`--env_name`
+
+```bash
+solsta_cli local launch --launch_name=<name> --location=<path> --stage=dev --out=json,minify
+```
+
+### local uninstall
+
+Uninstall a local environment. This is local-only and does **not** go through the orchestration queue.
+
+Additional flag: `--all` (uninstall every local deployment)
+
+```bash
 solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<path> --stage=dev --out=json,minify
 ```
 
-### Monitoring Local Operations
+### Monitoring Progress
 
 The `install`, `update`, `repair`, and `launch` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:
 
@@ -194,11 +228,9 @@ sleep 5 && bash scripts/queue-progress.sh qa 10
 
 **Important:** The queue monitor must run in the foreground — running it in the background hides progress from the user. After the queue monitor exits, read the background task output for the STOP result with deployment stats.
 
-The `uninstall` command is local-only and does **not** go through the orchestration queue.
+### Result Stats
 
-### Install Result Stats
-
-The STOP response from `local install`/`update` includes deployment stats:
+The STOP response from `install`, `update`, and `repair` includes deployment stats:
 
 | Field | Description |
 |---|---|
@@ -211,10 +243,6 @@ The STOP response from `local install`/`update` includes deployment stats:
 | `filesErased` | Number of files removed |
 
 ---
-
-## Install Location Convention
-
-When installing locally, use a clear path structure: `~/Downloads/<ProductName>/<EnvName>` or `~/Games/<ProductName>`. The `--location` parameter is required and must be an absolute path.
 
 ## Output Parsing
 
