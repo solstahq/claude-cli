@@ -51,45 +51,6 @@ solsta_cli org read --stage=dev --out=json,minify
 
 ---
 
-## product
-
-| Subcommand | Flags |
-|---|---|
-| `create` | `--product_id` (required), `--product_name`, `--description` |
-| `delete` | `--product_id` or `--product_name` |
-| `edit` | `--product_id` or `--product_name`, `--description` |
-| `read` | Pagination flags only (returns all products) |
-
-Sort fields: `createdTime`, `modifiedTime`, `name`, `product`
-
-```bash
-solsta_cli product read --stage=dev --out=json,minify
-solsta_cli product read --search_query=<query> --stage=dev --out=json,minify
-solsta_cli product create --product_id=<id> --product_name=<name> --stage=dev --out=json,minify
-```
-
----
-
-## env
-
-| Subcommand | Flags |
-|---|---|
-| `create` | `--product_id`/`--product_name`, `--env_id` (required), `--env_name`, `--description`, `--location`, `--storage_type`, `--update_path_count` |
-| `delete` | `--product_id`/`--product_name`, `--env_id`/`--env_name` |
-| `edit` | `--product_id`/`--product_name`, `--env_id`/`--env_name`, `--description`, `--location`, `--storage_type`, `--update_path_count` |
-| `read` | `--product_id`/`--product_name` (optional), pagination flags |
-
-Storage types: `pieceshared` (default), `piece`, `file`
-
-Sort fields: `createdTime`, `modifiedTime`, `name`, `env`
-
-```bash
-solsta_cli env read --product_name=<name> --stage=dev --out=json,minify
-solsta_cli env create --product_name=<name> --env_id=<id> --update_path_count=0 --stage=dev --out=json,minify
-```
-
----
-
 ## queue
 
 | Subcommand | Flags |

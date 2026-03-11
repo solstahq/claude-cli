@@ -159,7 +159,7 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 | Task | Use |
 |------|-----|
 | Login | CLI |
-| List products/envs/repos/releases | API (fastest) |
+| List products/envs/repos/releases | API |
 | Install, update, launch locally | CLI |
 | Orchestration queue | CLI |
 | Create/manage releases | API |
