@@ -110,7 +110,6 @@ All commands emit JSON lines with `type`: `START`, `INFO`, `STOP`. Always add `-
 
 ```bash
 solsta_cli org read --stage=dev --out=json,minify
-solsta_cli invite read --stage=dev --out=json,minify
 solsta_cli queue status --stage=dev --out=json,minify
 ```
 
@@ -162,7 +161,6 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 | Login | CLI |
 | List products/envs/repos/releases | API (fastest) |
 | Install, update, launch locally | CLI |
-| Manage invitations | CLI |
 | Orchestration queue | CLI |
 | Create/manage releases | API |
 | Create/manage repositories | API |

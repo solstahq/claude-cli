@@ -90,23 +90,6 @@ solsta_cli env create --product_name=<name> --env_id=<id> --update_path_count=0 
 
 ---
 
-## invite
-
-| Subcommand | Flags |
-|---|---|
-| `create` | `--invitee_email`, `--inviter_name` |
-| `delete` | `--invite_id` |
-| `read` | Pagination flags only |
-
-Sort fields: `invite`, `inviteeEmail`, `inviterName`, `invitationUrl`, `createdTime`, `expireTime`
-
-```bash
-solsta_cli invite read --stage=dev --out=json,minify
-solsta_cli invite create --invitee_email=<email> --inviter_name=<name> --stage=dev --out=json,minify
-```
-
----
-
 ## queue
 
 | Subcommand | Flags |
