@@ -11,11 +11,11 @@ Solsta is a fast, secure build distribution platform for game studios.
 
 ## Authentication
 
-All Solsta access requires authentication via `solsta_cli`:
+All Solsta access requires authentication. Use `scripts/get-token.sh` to login and retrieve the access token:
 
 ```bash
-# Interactive login (user must open the OAuth URL in their browser)
-solsta_cli login prompt --org=snxd --stage=dev --out=json,minify --display_token=true
+# Interactive login — stores token for use by other scripts and API calls
+TOKEN=$(scripts/get-token.sh <org> <stage>)
 
 # Machine-to-machine (CI/CD)
 solsta_cli login client_credentials --client_id=<id> --client_secret=<secret> --org=snxd --stage=dev --out=json,minify --display_token=true
@@ -23,7 +23,7 @@ solsta_cli login client_credentials --client_id=<id> --client_secret=<secret> --
 
 - `login` requires both `--org` and `--stage`. All other commands require only `--stage`.
 - Tokens are valid for ~12 hours.
-- `solsta_cli login prompt` requires interactive terminal input — the user must log in before the AI can use other commands.
+- `get-token.sh` runs `solsta_cli login prompt` which requires the user to open an OAuth URL in their browser.
 
 ## Stages
 
