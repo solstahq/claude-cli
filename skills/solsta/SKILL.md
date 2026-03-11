@@ -169,4 +169,6 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 | Publish/promote releases | API |
 | Manage teams and users | API |
 | View history/snapshots | API |
+| Fetch release metafile | `scripts/get-metafile.sh <stage> <product> <env> [release]` |
+| Get signed URLs for content | API (entitlement service, see [api.md](api.md)) |
 | Delta update path management | API |

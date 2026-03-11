@@ -116,6 +116,50 @@ curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1&sortDirection=back
   | jq '[.items[0].snapshot[] | {repo: .repositoryName, version: .version, size: .size}]'
 ```
 
+## Entitlement Service
+
+The entitlement service provides signed URLs for accessing protected resources (metafiles, content). It is a separate service from the Manifest API — the base path is `/entitlement/`, not `/manifest/`.
+
+```bash
+# Get a signed URL for a protected resource
+curl -s -H "Authorization: Bearer $TOKEN" \
+  "$BASE/entitlement/route?url=<URL>&redirect=0" | jq -r '.location'
+```
+
+- `url` — the original (unsigned) resource URL
+- `redirect=0` — returns JSON with `location` field instead of redirecting
+- The signed URL includes a time-limited token (e.g. `__token__=exp=...~hmac=...`)
+
+## Fetching a Release Metafile
+
+A metafile is a JSON manifest listing all files in a release (names, sizes, timestamps). To fetch one:
+
+1. Get the environment's `metafileLocation` (falls back to `publishLocation`):
+   ```bash
+   curl -s -H "Authorization: Bearer $TOKEN" \
+     "$BASE/manifest/env?product=$PRODUCT&env=$ENV" \
+     | jq -r '.items[0].metafileLocation // .items[0].publishLocation'
+   ```
+
+2. Construct the metafile URL:
+   ```
+   {metafileLocation}{product}/metafile/{release}/metafile.json
+   ```
+
+3. Get a signed URL via the entitlement service and download:
+   ```bash
+   SIGNED=$(curl -s -H "Authorization: Bearer $TOKEN" \
+     "$BASE/entitlement/route?url=$METAFILE_URL&redirect=0" | jq -r '.location')
+   curl -s "$SIGNED" | jq '.files[] | .name'
+   ```
+
+A helper script is available at `scripts/get-metafile.sh`:
+```bash
+# Usage: get-metafile.sh <stage> <product_id> <env_id> [release_id]
+# Omit release_id to fetch the latest promoted release
+scripts/get-metafile.sh qa $PRODUCT_ID $ENV_ID | jq '[.files[] | .name]'
+```
+
 ## Full Schema
 
 Refer to [references/manifest.swagger.yaml](references/manifest.swagger.yaml) for complete request/response schemas, all query parameters, and detailed field descriptions.
