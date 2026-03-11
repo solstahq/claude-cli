@@ -61,7 +61,7 @@ Organization
 - **Delta Update Paths** — Byte-level differences between two releases that minimize download size. Generated automatically during deploy/promote if the environment's Update Path Count > 0.
 - **Update Path Count** — Environment setting controlling how many prior releases get delta comparisons (0 = no deltas, 2 = two delta paths e.g. 1.0→3.0 and 2.0→3.0).
 - **Storage Types** — `pieceshared` (default, shared piece storage), `piece` (dedicated piece storage), `file` (file-based storage).
-- **Launch Buttons** — Configured executable entry points with arguments. Support `{installDirectory}` macro for subdirectory paths relative to install root.
+- **Launch Buttons** — Configured executable entry points with arguments. Support `{installDirectory}` macro for subdirectory paths relative to install root. See [launch.md](launch.md).
 
 ### Promotion Flow
 
