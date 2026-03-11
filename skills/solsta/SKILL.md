@@ -25,6 +25,7 @@ solsta_cli login client_credentials --client_id=<id> --client_secret=<secret> --
 - Tokens are valid for ~12 hours.
 - `get-token.sh` runs `solsta_cli login prompt` which requires the user to open an OAuth URL in their browser.
 - Never display the token in output. When capturing the token, suppress it (e.g. `TOKEN=$(scripts/get-token.sh <org> <stage>) && echo "Logged in"`).
+- Shell state does not persist between Bash tool calls. Capture the token fresh in each command that needs it: `TOKEN=$(scripts/get-token.sh <org> <stage>); curl -H "Authorization: Bearer $TOKEN" ...`
 
 ## Stages
 
