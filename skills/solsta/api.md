@@ -78,6 +78,7 @@ If `lastEvaluatedKey` is absent, there are no more items. Fewer items than `limi
 - Most properties limited to 120 characters (exceptions: locations 4096, search queries 5120)
 - POST to an existing object without an optional property keeps the existing value
 - POST to a non-existing object without an optional property uses the default
+- Always sort list results by name when displaying products, environments, or repositories (e.g. `?sortField=name`)
 
 ## Looking Up Endpoints
 

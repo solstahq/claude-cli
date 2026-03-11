@@ -226,6 +226,7 @@ jq -Rr 'fromjson?'
 
 ## Agent Notes
 
+- Always use `--sort_field=name` when listing products, environments, or repositories.
 - Help commands exit with code 1 (normal, not an error).
 - Successful data commands exit with code 0 and include data in the STOP line.
 - Names are case-sensitive throughout the CLI.
