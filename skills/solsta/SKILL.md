@@ -110,11 +110,10 @@ All commands emit JSON lines with `type`: `START`, `INFO`, `STOP`. Always add `-
 
 ```bash
 solsta_cli org read --stage=dev --out=json,minify
-solsta_cli product read --stage=dev --out=json,minify
-solsta_cli env read --product_name=<name> --stage=dev --out=json,minify
 solsta_cli invite read --stage=dev --out=json,minify
 solsta_cli queue status --stage=dev --out=json,minify
 ```
+
 
 ### CLI Notes
 
@@ -160,7 +159,8 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 
 | Task | Use |
 |------|-----|
-| Login, list products/envs | CLI |
+| Login | CLI |
+| List products/envs/repos/releases | API (fastest) |
 | Install, update, launch locally | CLI |
 | Manage invitations | CLI |
 | Orchestration queue | CLI |
@@ -175,6 +175,8 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 ---
 
 ## Helper Scripts
+
+**Always prefer helper scripts over raw CLI commands when a script exists for the task.** They handle output parsing, error checking, and correct usage patterns.
 
 | Script | Usage | Description |
 |--------|-------|-------------|
