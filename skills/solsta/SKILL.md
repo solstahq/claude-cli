@@ -146,8 +146,8 @@ For full API details and endpoints, see [api.md](api.md).
 **Before making any API call**, use `yq` to look up the endpoint in the OpenAPI spec. Use `jq` to parse API responses.
 ```bash
 # Look up endpoint params and schemas
-yq '.paths["/history"].get.parameters' references/manifest.swagger.yaml
-yq '.components.schemas.PublishObject' references/manifest.swagger.yaml
+yq '.paths["/history"].get.parameters' skills/solsta/references/manifest.swagger.yaml
+yq '.components.schemas.PublishObject' skills/solsta/references/manifest.swagger.yaml
 
 # Parse API responses
 curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .

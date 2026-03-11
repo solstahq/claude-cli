@@ -86,16 +86,16 @@ Before making any API call, use `yq` to check the OpenAPI spec for parameter nam
 
 ```bash
 # Get parameters for an endpoint
-yq '.paths["/history"].get.parameters' references/manifest.swagger.yaml
+yq '.paths["/history"].get.parameters' skills/solsta/references/manifest.swagger.yaml
 
 # Get request body schema (for PUT/POST)
-yq '.paths["/publish"].put.requestBody' references/manifest.swagger.yaml
+yq '.paths["/publish"].put.requestBody' skills/solsta/references/manifest.swagger.yaml
 
 # Look up a schema definition referenced by $ref
-yq '.components.schemas.PublishObject' references/manifest.swagger.yaml
+yq '.components.schemas.PublishObject' skills/solsta/references/manifest.swagger.yaml
 
 # Get response schema
-yq '.paths["/product"].get.responses["200"].content["application/json"].schema' references/manifest.swagger.yaml
+yq '.paths["/product"].get.responses["200"].content["application/json"].schema' skills/solsta/references/manifest.swagger.yaml
 ```
 
 Parameter descriptions indicate the expected value type — e.g. `description: Product id` means pass the object's **ID**, not its display name. This applies to query params and request body fields alike.
@@ -163,4 +163,4 @@ scripts/get-metafile.sh ssnqa qa $PRODUCT_ID $ENV_ID | jq '[.files[] | .name]'
 
 ## Full Schema
 
-Refer to [references/manifest.swagger.yaml](references/manifest.swagger.yaml) for complete request/response schemas, all query parameters, and detailed field descriptions.
+Refer to [skills/solsta/references/manifest.swagger.yaml](skills/solsta/references/manifest.swagger.yaml) for complete request/response schemas, all query parameters, and detailed field descriptions.

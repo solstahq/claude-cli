@@ -9,7 +9,7 @@ Both types use the same core API calls: ensure repos/releases exist on the targe
 
 Use `yq` to verify schemas before calling any endpoint:
 ```bash
-yq '.components.schemas.HistoryObject' references/manifest.swagger.yaml
+yq '.components.schemas.HistoryObject' skills/solsta/references/manifest.swagger.yaml
 ```
 
 ---
