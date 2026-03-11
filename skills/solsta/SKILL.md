@@ -24,6 +24,7 @@ solsta_cli login client_credentials --client_id=<id> --client_secret=<secret> --
 - `login` requires both `--org` and `--stage`. All other commands require only `--stage`.
 - Tokens are valid for ~12 hours.
 - `get-token.sh` runs `solsta_cli login prompt` which requires the user to open an OAuth URL in their browser.
+- Never display the token in output. When capturing the token, suppress it (e.g. `TOKEN=$(scripts/get-token.sh <org> <stage>) && echo "Logged in"`).
 
 ## Stages
 
