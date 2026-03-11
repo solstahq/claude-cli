@@ -156,6 +156,8 @@ solsta_cli component get --name=solsta_cli --target=/usr/local/bin/ --out=json,m
 
 All subcommands (except `read`) require `--location`. Most accept `--product_id`/`--product_name` and `--env_id`/`--env_name`.
 
+**Before installing**, always run `local read` to check for existing installs of the same product/env. If found, show them to the user and ask if they want to install another copy into a different directory.
+
 `install` additional flags: `--history_id`, `--history_version`, `--repository_id`, `--repository_name`, `--release_id`, `--release_version`
 
 `launch` additional flags: `--launch_name` (required), `--product_id`/`--product_name`, `--env_id`/`--env_name`
