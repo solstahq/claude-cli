@@ -1,15 +1,17 @@
 #!/bin/bash
 # Fetch a release metafile from Solsta
-# Usage: ./get-metafile.sh <stage> <product_id> <env_id> [release_id]
+# Usage: ./get-metafile.sh <org> <stage> <product_id> <env_id> [release_id]
 #
 # If release_id is omitted, fetches the latest promoted release.
 # Outputs the metafile JSON (file listing with names, sizes, timestamps).
 
-STAGE="${1:?Usage: $0 <stage> <product_id> <env_id> [release_id]}"
-PRODUCT="${2:?Usage: $0 <stage> <product_id> <env_id> [release_id]}"
-ENV="${3:?Usage: $0 <stage> <product_id> <env_id> [release_id]}"
-RELEASE="$4"
-TOKEN=$(cat /tmp/solsta_token.txt)
+ORG="${1:?Usage: $0 <org> <stage> <product_id> <env_id> [release_id]}"
+STAGE="${2:?Usage: $0 <org> <stage> <product_id> <env_id> [release_id]}"
+PRODUCT="${3:?Usage: $0 <org> <stage> <product_id> <env_id> [release_id]}"
+ENV="${4:?Usage: $0 <org> <stage> <product_id> <env_id> [release_id]}"
+RELEASE="$5"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TOKEN=$("$SCRIPT_DIR/get-token.sh" "$ORG" "$STAGE")
 BASE="https://axis-${STAGE}.snxd.com"
 
 # Get metafileLocation from environment

@@ -156,9 +156,9 @@ A metafile is a JSON manifest listing all files in a release (names, sizes, time
 
 A helper script is available at `scripts/get-metafile.sh`:
 ```bash
-# Usage: get-metafile.sh <stage> <product_id> <env_id> [release_id]
+# Usage: get-metafile.sh <stage> <org> <product_id> <env_id> [release_id]
 # Omit release_id to fetch the latest promoted release
-scripts/get-metafile.sh qa $PRODUCT_ID $ENV_ID | jq '[.files[] | .name]'
+scripts/get-metafile.sh ssnqa qa $PRODUCT_ID $ENV_ID | jq '[.files[] | .name]'
 ```
 
 ## Full Schema

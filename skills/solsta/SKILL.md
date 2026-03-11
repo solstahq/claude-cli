@@ -161,7 +161,6 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 |------|-----|
 | Login, list products/envs | CLI |
 | Install, update, launch locally | CLI |
-| Check for updates | `scripts/check-for-updates.sh <stage>` |
 | Manage invitations | CLI |
 | Orchestration queue | CLI |
 | Create/manage releases | API |
@@ -169,6 +168,16 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 | Publish/promote releases | API |
 | Manage teams and users | API |
 | View history/snapshots | API |
-| Fetch release metafile | `scripts/get-metafile.sh <stage> <product> <env> [release]` |
 | Get signed URLs for content | API (entitlement service, see [api.md](api.md)) |
 | Delta update path management | API |
+
+---
+
+## Helper Scripts
+
+| Script | Usage | Description |
+|--------|-------|-------------|
+| `get-token.sh` | `<org> <stage>` | Get access token via `solsta_cli login`. Used by other scripts. |
+| `check-for-updates.sh` | `<org> <stage>` | Compare local installs against remote promoted releases. |
+| `get-metafile.sh` | `<org> <stage> <product> <env> [release]` | Fetch a release metafile via the entitlement service. |
+| `queue-progress.sh` | `<stage> [interval]` | Poll orchestration queue and display progress bars. |

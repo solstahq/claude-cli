@@ -1,11 +1,13 @@
 #!/bin/bash
 # Compare local Solsta installs against remote promoted releases
-# Usage: ./check-for-updates.sh <stage>
+# Usage: ./check-for-updates.sh <org> <stage>
 #
 # Outputs one line per local install with update status.
 
-STAGE="${1:-qa}"
-TOKEN=$(cat /tmp/solsta_token.txt)
+ORG="${1:?Usage: $0 <org> <stage>}"
+STAGE="${2:-qa}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TOKEN=$("$SCRIPT_DIR/get-token.sh" "$ORG" "$STAGE")
 BASE="https://axis-${STAGE}.snxd.com/manifest"
 JQ_REPOS='[.repositories[]? | "\(.repositoryName)=\(.version)"] | join(",")'
 JQ_REMOTE='[.items[0].snapshot[]? | "\(.repositoryName)=\(.version)"] | join(",")'
