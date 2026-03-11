@@ -167,10 +167,10 @@ solsta_cli local update --product_name=<name> --env_name=<env> \
   --location=<path> --stage=qa --out=json,minify 2>&1 | jq '.'
 
 # Foreground (after a short delay): queue monitor
-sleep 5 && bash scripts/queue-progress.sh qa 10
+sleep 2 && bash scripts/queue-progress.sh qa 10
 ```
 
-**Important:** The queue monitor must run in the foreground — running it in the background hides progress from the user. After the queue monitor exits, read the background task output for the STOP result with deployment stats.
+**Important:** The queue monitor must run in the foreground — running it in the background hides progress from the user. After the queue monitor exits, read the background task's **output file** (from the Bash tool's response) to get the STOP result with deployment stats. Do NOT use `TaskOutput` — it uses a separate task system and will not find background Bash task IDs.
 
 ### Result Stats
 
