@@ -15,6 +15,11 @@ CRED_FILE="$CRED_DIR/$(echo -n "$VAULT_KEY" | shasum -a 1 | cut -d' ' -f1).cred"
 # Try to read cached token and check expiry
 if [ -f "$CRED_FILE" ]; then
   CACHED_TOKEN=$(sed -n '2p' "$CRED_FILE")
+  # Strip org prefix if present (e.g. "ssnqa.eyJ..." -> "eyJ...")
+  case "$CACHED_TOKEN" in
+    eyJ*) ;; # Already a JWT, no prefix
+    *) CACHED_TOKEN="${CACHED_TOKEN#*.}" ;;
+  esac
   if [ -n "$CACHED_TOKEN" ]; then
     # Decode JWT payload and check exp (with 10 min padding to match CLI behavior)
     EXP=$(echo "$CACHED_TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq -r '.exp // 0')
