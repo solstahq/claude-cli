@@ -156,7 +156,7 @@ solsta_cli local uninstall --product_name=<name> --env_name=<env> --location=<pa
 
 ### Monitoring Progress
 
-The `install`, `update`, `repair`, and `launch` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:
+The `install`, `update`, and `repair` commands go through the orchestration queue and block until complete with no streaming progress output. To monitor progress in real time:
 
 1. Run the local command in the **background** (so it doesn't block)
 2. Run `scripts/queue-progress.sh <stage> [poll_interval]` in the **foreground** (so progress is visible to the user)
