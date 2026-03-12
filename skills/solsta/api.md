@@ -58,6 +58,29 @@ List endpoints support pagination via query parameters:
 | `sortDirection` | `forward` or `backward` |
 | `searchQuery` | Filter results |
 
+### Sort Order
+
+Always include `sortField` and `sortDirection` when querying list endpoints. Use the following values for each endpoint:
+
+| Endpoint | Default `sortField` | Default `sortDirection` |
+|----------|---------------------|-------------------------|
+| `/product` | `name` | `forward` |
+| `/product/member` | `member` | `forward` |
+| `/env` | `name` | `forward` |
+| `/env/member` | `member` | `forward` |
+| `/repository` | `name` | `forward` |
+| `/release` | `createdTime` | `backward` |
+| `/update-path` | `createdTime` | `backward` |
+| `/publish` | `createdTime` | `backward` |
+| `/history` | `createdTime` | `backward` |
+| `/machine` | `name` | `forward` |
+| `/machine/member` | `name` | `forward` |
+| `/team` | `name` | `forward` |
+| `/team/member` | `memberName` | `forward` |
+| `/org/member` | `memberName` | `forward` |
+| `/user` | `name` | `forward` |
+| `/user/member` | `name` | `forward` |
+
 When more items exist, the response includes a `lastEvaluatedKey` object. Pass it as query parameters in the next request.
 
 ```bash
@@ -78,7 +101,6 @@ If `lastEvaluatedKey` is absent, there are no more items. Fewer items than `limi
 - Most properties limited to 120 characters (exceptions: locations 4096, search queries 5120)
 - POST to an existing object without an optional property keeps the existing value
 - POST to a non-existing object without an optional property uses the default
-- Always sort list results by name when displaying products, environments, or repositories (e.g. `?sortField=name`)
 
 ## Looking Up Endpoints
 
@@ -112,8 +134,7 @@ curl -s -H "Authorization: Bearer $TOKEN" "$BASE_URL/product" | jq .
 curl -s ... | jq '[.items[] | {name: .name, id: .product}]'
 
 # Get current (latest) releases for an environment from /history
-# Default sort is oldest-first — use sortDirection=backward for newest
-curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1&sortDirection=backward" \
+curl -s ... "/history?product=$PRODUCT_ID&env=$ENV_ID&limit=1&sortField=createdTime&sortDirection=backward" \
   | jq '[.items[0].snapshot[] | {repo: .repositoryName, version: .version, size: .size}]'
 ```
 
