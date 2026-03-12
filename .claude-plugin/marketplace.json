@@ -5,12 +5,12 @@
   },
   "metadata": {
     "description": "Claude Code marketplace plugin for the Solsta build distribution platform.",
-    "version": "1.0.0"
+    "version": "1.0.12"
   },
   "plugins": [
     {
       "name": "solsta",
-      "version": "1.0.0",
+      "version": "1.0.12",
       "source": "./",
       "description": "Skills for working with the Solsta platform CLI and backend APIs"
     }
