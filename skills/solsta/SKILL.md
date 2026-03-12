@@ -155,6 +155,26 @@ curl -s -H "Authorization: Bearer $TOKEN" "$URL" | jq .
 
 ---
 
+## Parsing JSON Responses
+
+The CLI and REST API use different response structures. Always use the correct path when parsing with `jq`.
+
+| Source | List items path | Single item path |
+|--------|----------------|-----------------|
+| CLI (`solsta_cli`) | `.body.items[]` | `.body.item` |
+| REST API (`curl`) | `.items[]` | `.items[0]` |
+
+```bash
+# CLI: extract list items from STOP response
+solsta_cli local read --stage=qa --out=json,minify 2>&1 \
+  | jq -r 'select(.type == "STOP") | .body.items[]'
+
+# API: extract list items
+curl -s -H "Authorization: Bearer $TOKEN" "$BASE/product" | jq '.items[]'
+```
+
+---
+
 ## When to Use Which
 
 | Task | Use |
