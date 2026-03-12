@@ -20,88 +20,6 @@ The base URL pattern is `https://{host}/manifest/` where `{host}` corresponds to
 | `qa` | `https://axis-qa.snxd.com/manifest/` |
 | `prod` | `https://axis.snxd.com/manifest/` |
 
-## Available Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `/product` | Product CRUD and search |
-| `/product/member` | Product team membership |
-| `/env` | Environment CRUD and search |
-| `/env/member` | Environment team membership |
-| `/repository` | Repository CRUD and search |
-| `/release` | Release CRUD and search |
-| `/update-path` | Delta update path management |
-| `/publish` | Publishing/promotion operations |
-| `/history` | Environment history and snapshots |
-| `/history/review` | History review operations |
-| `/machine` | Machine/M2M credential management |
-| `/machine/member` | Machine team membership |
-| `/local` | Local installation tracking |
-| `/orchestration/queue` | Orchestration queue management |
-| `/orchestration/status` | Orchestration status |
-| `/org` | Organization info |
-| `/org/member` | Organization membership |
-| `/team` | Team CRUD |
-| `/team/member` | Team membership |
-| `/user` | User management |
-| `/user/member` | User team membership |
-| `/me` | Current user info |
-
-## Pagination
-
-List endpoints support pagination via query parameters:
-
-| Parameter | Description |
-|-----------|-------------|
-| `limit` | Max items per request (e.g. `?limit=10`) |
-| `sortField` | Field to sort by (varies per endpoint) |
-| `sortDirection` | `forward` or `backward` |
-| `searchQuery` | Filter results |
-
-### Sort Order
-
-Always include `sortField` and `sortDirection` when querying list endpoints. Use the following values for each endpoint:
-
-| Endpoint | Default `sortField` | Default `sortDirection` |
-|----------|---------------------|-------------------------|
-| `/product` | `name` | `forward` |
-| `/product/member` | `member` | `forward` |
-| `/env` | `name` | `forward` |
-| `/env/member` | `member` | `forward` |
-| `/repository` | `name` | `forward` |
-| `/release` | `createdTime` | `backward` |
-| `/update-path` | `createdTime` | `backward` |
-| `/publish` | `createdTime` | `backward` |
-| `/history` | `createdTime` | `backward` |
-| `/machine` | `name` | `forward` |
-| `/machine/member` | `name` | `forward` |
-| `/team` | `name` | `forward` |
-| `/team/member` | `memberName` | `forward` |
-| `/org/member` | `memberName` | `forward` |
-| `/user` | `name` | `forward` |
-| `/user/member` | `name` | `forward` |
-
-When more items exist, the response includes a `lastEvaluatedKey` object. Pass it as query parameters in the next request.
-
-```bash
-# First page
-curl -H "Authorization: Bearer $TOKEN" "https://axis-dev.snxd.com/manifest/product?limit=10"
-
-# Next page
-curl -H "Authorization: Bearer $TOKEN" "https://axis-dev.snxd.com/manifest/product?limit=10&startKey=<lastEvaluatedKey>"
-```
-
-If `lastEvaluatedKey` is absent, there are no more items. Fewer items than `limit` may be returned even when more pages exist (response exceeds 4MB or query takes too long).
-
-## API Notes
-
-- Partition keys use dotted notation: `org.product`, `org.product.env`, `org.product.env.repository`
-- Avoid `.` or `*` in product, environment, repository, and release IDs
-- Whitespace at the beginning or ending of strings is automatically stripped
-- Most properties limited to 120 characters (exceptions: locations 4096, search queries 5120)
-- POST to an existing object without an optional property keeps the existing value
-- POST to a non-existing object without an optional property uses the default
-
 ## Looking Up Endpoints
 
 Before making any API call, use `yq` to check the OpenAPI spec for parameter names, types, and descriptions:
@@ -121,6 +39,66 @@ yq '.paths["/product"].get.responses["200"].content["application/json"].schema' 
 ```
 
 Parameter descriptions indicate the expected value type — e.g. `description: Product id` means pass the object's **ID**, not its display name. This applies to query params and request body fields alike.
+
+## Available Endpoints
+
+Always include `sortField` and `sortDirection` when querying list endpoints.
+
+| Endpoint | Description | `sortField` | `sortDirection` |
+|----------|-------------|-------------|-----------------|
+| `/product` | Product CRUD and search | `name` | `forward` |
+| `/product/member` | Product team membership | `member` | `forward` |
+| `/env` | Environment CRUD and search | `name` | `forward` |
+| `/env/member` | Environment team membership | `member` | `forward` |
+| `/repository` | Repository CRUD and search | `name` | `forward` |
+| `/release` | Release CRUD and search | `createdTime` | `backward` |
+| `/update-path` | Delta update path management | `createdTime` | `backward` |
+| `/publish` | Publishing/promotion operations | `createdTime` | `backward` |
+| `/history` | Environment history and snapshots | `createdTime` | `backward` |
+| `/history/review` | History review operations | | |
+| `/machine` | Machine/M2M credential management | `name` | `forward` |
+| `/machine/member` | Machine team membership | `name` | `forward` |
+| `/local` | Local installation tracking | | |
+| `/orchestration/queue` | Orchestration queue management | | |
+| `/orchestration/status` | Orchestration status | | |
+| `/org` | Organization info | | |
+| `/org/member` | Organization membership | `memberName` | `forward` |
+| `/team` | Team CRUD | `name` | `forward` |
+| `/team/member` | Team membership | `memberName` | `forward` |
+| `/user` | User management | `name` | `forward` |
+| `/user/member` | User team membership | `name` | `forward` |
+| `/me` | Current user info | | |
+
+## Pagination
+
+List endpoints support pagination via query parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `limit` | Max items per request (e.g. `?limit=10`) |
+| `searchQuery` | Filter results |
+| `startKey` | Cursor for next page (from `lastEvaluatedKey` in previous response) |
+
+When more items exist, the response includes a `lastEvaluatedKey` object. Pass it as `startKey` in the next request.
+
+```bash
+# First page
+curl -H "Authorization: Bearer $TOKEN" "https://axis-dev.snxd.com/manifest/product?limit=10"
+
+# Next page
+curl -H "Authorization: Bearer $TOKEN" "https://axis-dev.snxd.com/manifest/product?limit=10&startKey=<lastEvaluatedKey>"
+```
+
+If `lastEvaluatedKey` is absent, there are no more items. Fewer items than `limit` may be returned even when more pages exist (response exceeds 4MB or query takes too long).
+
+## API Notes
+
+- Partition keys use dotted notation: `org.product`, `org.product.env`, `org.product.env.repository`
+- Avoid `.` or `*` in product, environment, repository, and release IDs
+- Whitespace at the beginning or ending of strings is automatically stripped
+- Most properties limited to 120 characters (exceptions: locations 4096, search queries 5120)
+- POST to an existing object without an optional property keeps the existing value
+- POST to a non-existing object without an optional property uses the default
 
 ## Parsing Responses
 
